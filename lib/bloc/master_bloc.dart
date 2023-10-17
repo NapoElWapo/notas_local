@@ -30,9 +30,7 @@ class MasterBloc extends Bloc<MasterEvent, MasterState> {
   ) async {
     try {
       emit(RetrievedNotesProcessingState());
-      var _notesBox = await Hive.openBox<dynamic>("notes");
-      _notesList = _notesBox.values.first;
-      // _notesList = _notesBox.get("allMyNotes") ?? [];
+      //TODO: get stored data
       emit(RetrievedNotesState(notesList: _notesList));
     } catch (e) {
       emit(
@@ -49,14 +47,7 @@ class MasterBloc extends Bloc<MasterEvent, MasterState> {
   ) async {
     try {
       emit(RetrievedNotesProcessingState());
-      var _notesBox = await Hive.openBox<dynamic>("notes");
-      _notesList.add(
-        {
-          "path": "${_chosenImage!.path}",
-          "note": "${_notesController.text}",
-        },
-      );
-      await _notesBox.put("allMyNotes", _notesList);
+      // TODO: save notes to storage
       emit(FormSavedState());
     } catch (e) {
       emit(
@@ -90,17 +81,6 @@ class MasterBloc extends Bloc<MasterEvent, MasterState> {
 
   // Other methods
   Future<void> _getImage() async {
-    final pickedFile = await ImagePicker().pickImage(
-      source: ImageSource.camera,
-      maxHeight: 720,
-      maxWidth: 720,
-      imageQuality: 85,
-    );
-    if (pickedFile != null) {
-      _chosenImage = File(pickedFile.path);
-    } else {
-      print('No image selected.');
-      _chosenImage = null;
-    }
+    // TODO: implement take picture
   }
 }
