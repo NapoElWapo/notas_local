@@ -71,20 +71,20 @@ class NoteFormPage extends StatelessWidget {
         ),
         ElevatedButton(
           onPressed: () {
-            BlocProvider.of<MasterBloc>(blocContext!)
+            BlocProvider.of<MasterBloc>(blocContext)
                 .add(SaveNoteToStorageEvent());
           },
           child: Text("Guardar nota"),
         ),
         TextButton(
           onPressed: () {
-            BlocProvider.of<MasterBloc>(blocContext!).add(ChangeImageEvent());
+            BlocProvider.of<MasterBloc>(blocContext).add(ChangeImageEvent());
           },
           child: Text("Tomar foto"),
         ),
         TextButton(
           onPressed: () {
-            // TODO: Agregar evento al bloc para limpiar form
+            BlocProvider.of<MasterBloc>(blocContext).add(ClearNotesFormEvent());
           },
           child: Text("Limpiar formulario"),
         ),

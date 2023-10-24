@@ -6,6 +6,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 
 part 'master_event.dart';
 part 'master_state.dart';
@@ -30,7 +31,11 @@ class MasterBloc extends Bloc<MasterEvent, MasterState> {
   ) async {
     try {
       emit(RetrievedNotesProcessingState());
+
       //TODO: get stored data
+      var box = await Hive.openBox("notes");
+      _notesList = box.get("notes", defaultValue: []);
+
       emit(RetrievedNotesState(notesList: _notesList));
     } catch (e) {
       emit(
@@ -47,7 +52,15 @@ class MasterBloc extends Bloc<MasterEvent, MasterState> {
   ) async {
     try {
       emit(RetrievedNotesProcessingState());
+
       // TODO: save notes to storage
+      var box = await Hive.openBox("notes");
+      _notesList.add({
+        "note": _notesController.text,
+        "path": _chosenImage?.path,
+      });
+      await box.put("notes", _notesList);
+
       emit(FormSavedState());
     } catch (e) {
       emit(
@@ -82,5 +95,16 @@ class MasterBloc extends Bloc<MasterEvent, MasterState> {
   // Other methods
   Future<void> _getImage() async {
     // TODO: implement take picture
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      var image = await ImagePicker().pickImage(source: ImageSource.camera);
+      _chosenImage = null;
+      if (image != null) {
+        await image.saveTo("${directory.path}/${image.name}");
+        _chosenImage = File("${directory.path}/${image.name}");
+      }
+    } catch (e) {
+      _chosenImage = null;
+    }
   }
 }

@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notas_share/bloc/master_bloc.dart';
 import 'package:notas_share/note_form_page.dart';
+import 'package:share_plus/share_plus.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({
@@ -40,14 +43,35 @@ class HomePage extends StatelessWidget {
     return ListView.builder(
       itemCount: notesList.length,
       itemBuilder: (BuildContext context, int index) {
+        var note = notesList[index];
+        if (note["path"] != null) {
+          String imagePath = note["path"];
+          return ListTile(
+            leading: CircleAvatar(
+              child: Image.file(
+                File(imagePath),
+                fit: BoxFit.contain,
+              ),
+            ),
+            trailing: IconButton(
+              icon: Icon(Icons.share),
+              onPressed: () async {
+                await Share.shareXFiles(
+                  [XFile(imagePath)],
+                  text: note["note"],
+                  subject: "Nota compartida desde notas_local",
+                );
+                await Share.share(
+                  note["note"],
+                  subject: "Nota compartida desde notas_local",
+                );
+              },
+            ),
+            title: Text(note["note"]),
+          );
+        }
         return ListTile(
-          // leading: CircleAvatar(
-          //   child: Image.asset(
-          //     "${notesList[index]["path"]}",
-          //     fit: BoxFit.contain,
-          //   ),
-          // ),
-          title: Text("${notesList[index]["note"]}"),
+          title: Text(note["note"]),
         );
       },
     );
